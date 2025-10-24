@@ -1,0 +1,19 @@
+--
+-- Archivo generado con SQLiteStudio v3.4.4 el vi. oct. 24 10:20:16 2025
+--
+-- Codificaci�n de texto usada: System
+--
+PRAGMA foreign_keys = off;
+BEGIN TRANSACTION;
+
+-- Tabla: Detalles
+CREATE TABLE IF NOT EXISTS Detalles (idPresupuesto INTEGER PRIMARY KEY NOT NULL, idProductos INTEGER NOT NULL, Cantidad INTEGER NOT NULL);
+
+-- Tabla: Presupuestos
+CREATE TABLE IF NOT EXISTS Presupuestos (idPresupuesto INTEGER NOT NULL PRIMARY KEY, NombreDestinatario TEXT (100) NOT NULL, FechaCreacion DATE NOT NULL);
+
+-- Tabla: Productos
+CREATE TABLE IF NOT EXISTS Productos (idProducto INTEGER PRIMARY KEY NOT NULL, Descripcion REAL NOT NULL, Precio NUMERIC NOT NULL);
+
+COMMIT TRANSACTION;
+PRAGMA foreign_keys = on;
