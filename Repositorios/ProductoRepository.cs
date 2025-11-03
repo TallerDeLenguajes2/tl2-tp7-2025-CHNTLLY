@@ -4,6 +4,38 @@ public class ProductoRepository
 {
     private string stringConnection = "Data Source = tienda.db";
 
+    public void CrearProducto(Productos ProdInsertar)
+    {
+        using var conexion = new SqliteConnection(stringConnection);
+        conexion.Open();
+
+        string query = "INSERT INTO Productos (idProducto, Descripcion, Precio) VALUES (@idProducto,@Descripcion,@Precio)";
+
+        using var comando = new SqliteCommand(query, conexion);
+
+        comando.Parameters.Add(new SqliteParameter("@idProducto", ProdInsertar.IdProducto));
+        comando.Parameters.Add(new SqliteParameter("@Descripcion", ProdInsertar.Descripcion));
+        comando.Parameters.Add(new SqliteParameter("@Precio", ProdInsertar.Precio));
+
+        comando.ExecuteNonQuery();
+    }
+
+    public bool ModificarProducto(int idBuscar, Productos prodActualizar)
+    {
+        using var conexion = new SqliteConnection(stringConnection);
+        conexion.Open();
+
+        string query = "UPDATE Productos SET idProducto = @idProducto, Descripcion = @Descripcion, Precio = @Precio WHERE idProducto = @idBuscar";
+        using var comando = new SqliteCommand(query, conexion);
+
+        comando.Parameters.Add(new SqliteParameter("@idProducto", prodActualizar.Descripcion));
+        comando.Parameters.Add(new SqliteParameter("@Descripcion", prodActualizar.Descripcion));
+        comando.Parameters.Add(new SqliteParameter("@Precio", prodActualizar.Precio));
+        comando.Parameters.Add(new SqliteParameter("@idBuscar", idBuscar));
+
+        return comando.ExecuteNonQuery() > 0;
+    }
+    
     public List<Productos> GetProductos()
     {
         List<Productos> productos = new List<Productos>();
@@ -18,48 +50,17 @@ public class ProductoRepository
         {
             var p = new Productos
             {
-                idProducto = lector.GetInt32(lector.GetOrdinal("idProducto")),
+                IdProducto = lector.GetInt32(lector.GetOrdinal("idProducto")),
                 Descripcion = lector.GetString(lector.GetOrdinal("Descripcion")),
                 Precio = lector.GetDouble(lector.GetOrdinal("Precio"))
             };
             productos.Add(p);
         }
-
         return productos;
     }
 
-    public void CrearProducto(Productos ProdInsertar)
-    {
-        using var conexion = new SqliteConnection(stringConnection);
-        conexion.Open();
 
-        string query = "INSERT INTO productos (idProducto, Descripcion, Precio) VALUES (@idProducto,@Descripcion,@Precio)";
-
-        using var comando = new SqliteCommand(query, conexion);
-
-        comando.Parameters.Add(new SqliteParameter("@idProducto", ProdInsertar.idProducto));
-        comando.Parameters.Add(new SqliteParameter("@Descripcion", ProdInsertar.Descripcion));
-        comando.Parameters.Add(new SqliteParameter("@Precio", ProdInsertar.Precio));
-
-        comando.ExecuteNonQuery();
-    }
-    public void ActualizarProducto(int idBuscar, Productos prodActualizar)
-    {
-        using var conexion = new SqliteConnection(stringConnection);
-        conexion.Open();
-
-        string query = "UPDATE Producto SET idProducto = @idProducto, Descripcion = @Descripcion, Precio = @Precio WHERE idProducto = @idBuscar";
-        using var comando = new SqliteCommand(query, conexion);
-
-        comando.Parameters.Add(new SqliteParameter("@idProducto", prodActualizar.idProducto));
-        comando.Parameters.Add(new SqliteParameter("@Descripcion", prodActualizar.Descripcion));
-        comando.Parameters.Add(new SqliteParameter("@Precio", prodActualizar.Precio));
-        comando.Parameters.Add(new SqliteParameter("@idBuscar", idBuscar));
-
-        comando.ExecuteNonQuery();
-    }
-
-    public Productos ObtenerPorId(int idBuscar)
+    public Productos? ObtenerPorId(int idBuscar)
     {
         using var conexion = new SqliteConnection(stringConnection);
         string query = "SELECT idProducto,Descripcion,Precio FROM productos WHERE idProducto = @idBuscar";
@@ -73,7 +74,7 @@ public class ProductoRepository
         {
             Productos productoRetorno = new Productos
             {
-                idProducto = lector.GetInt32(lector.GetOrdinal("idProducto")),
+                IdProducto = lector.GetInt32(lector.GetOrdinal("idProducto")),
                 Descripcion = lector.GetString(lector.GetOrdinal("Descripcion")),
                 Precio = lector.GetDouble(lector.GetOrdinal("Precio"))
             };
@@ -82,18 +83,16 @@ public class ProductoRepository
         return null;
     }
 
-    public void EliminarProducto(int idBuscar)
+    public bool EliminarProducto(int idBuscar)
     {
         using var conexion = new SqliteConnection(stringConnection);
         conexion.Open();
 
-        string query = "DELETE FROM productos WHERE idProducto = @idBuscar";
+        string query = "DELETE FROM Productos WHERE idProducto = @idBuscar";
         using var comando = new SqliteCommand(query, conexion);
 
         comando.Parameters.Add(new SqliteParameter("@idBuscar", idBuscar));
 
-        comando.ExecuteNonQuery();
-        
+        return comando.ExecuteNonQuery() > 0;   
     }
-
 }

@@ -3,7 +3,7 @@ namespace EspacioPresupustosDetalle
 {
     public class PresupuestoDetalle
     {
-        public Productos producto { get; set; }
+        public Productos? Producto { get; set; }
         public int cantidad { get; set;}
     }
 }
