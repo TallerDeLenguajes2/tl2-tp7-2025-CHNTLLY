@@ -4,7 +4,7 @@ public class ProductoRepository
 {
     private string stringConnection = "Data Source = tienda.db";
 
-    public void CrearProducto(Productos ProdInsertar)
+    public bool CrearProducto(Productos ProdInsertar)
     {
         using var conexion = new SqliteConnection(stringConnection);
         conexion.Open();
@@ -17,7 +17,7 @@ public class ProductoRepository
         comando.Parameters.Add(new SqliteParameter("@Descripcion", ProdInsertar.Descripcion));
         comando.Parameters.Add(new SqliteParameter("@Precio", ProdInsertar.Precio));
 
-        comando.ExecuteNonQuery();
+        return comando.ExecuteNonQuery() > 0;
     }
 
     public bool ModificarProducto(int idBuscar, Productos prodActualizar)
