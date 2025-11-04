@@ -93,7 +93,7 @@ public class PresupuestoRepository
         }
         return (presupuestoRetorno);
     }
-    public void AgregarPresupuesto(int idBuscar, int idProducto, int Cantidad)
+    public bool AgregarPresupuesto(int idBuscar, int idProducto, int Cantidad)
     {
         using var conexion = new SqliteConnection(stringConnection);
         conexion.Open();
@@ -108,7 +108,7 @@ public class PresupuestoRepository
         comando.Parameters.Add(new SqliteParameter("@idProducto", idProducto));
         comando.Parameters.Add(new SqliteParameter("@Cantidad", Cantidad));
 
-        comando.ExecuteNonQuery();
+        return comando.ExecuteNonQuery() > 0;
     }
     public bool EliminarPresupuesto(int idBuscar)
     {
