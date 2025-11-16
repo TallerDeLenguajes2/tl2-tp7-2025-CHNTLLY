@@ -44,8 +44,7 @@ namespace EspacioProductosControllers
         public IActionResult ListarProductos()
         {
             List<Productos> listado = accesoProductos.GetProductos();
-            if (listado == null) { return Ok("El listado de productos esta vacio"); }
-            ;
+            if (listado == null) { return Ok("El listado de productos esta vacio"); };
             return Ok(listado);
         }
 

@@ -7,31 +7,42 @@ namespace EspacioPresupuestos
         public string? NombreDestinatario { get; set; }
         public DateTime FechaCreacion { get; set; }
         public List<PresupuestoDetalle>? Detalle { get; set; }
-        double MontoPresupuesto()
+        decimal MontoPresupuesto()
         {
-            double retorno = 0;
+            decimal retorno = 0;
             if (Detalle == null) { return retorno; };
             for (int i = 0; i < Detalle.Count(); i++)
             {
-                retorno += Detalle[i].Producto.Precio * Detalle[i].cantidad;
+                if(Detalle[i].Producto != null)
+                {
+                    retorno += Detalle[i].Producto.Precio * Detalle[i].cantidad;
+                }
             }
             return (retorno);
         }
-        double MontoPresupuestoConIva()
+        decimal MontoPresupuestoConIva()
         {
-            double retorno = 0;
+            decimal retorno = 0;
             if (Detalle == null) { return retorno; };
             for (int i = 0; i < Detalle.Count(); i++)
             {
-                retorno += Detalle[i].Producto.Precio * Detalle[i].cantidad;
+                if(Detalle[i].Producto != null)
+                {
+                    retorno += Detalle[i].Producto.Precio * Detalle[i].cantidad;
+                }
             }
-            retorno *= 1.21;
+            retorno *= Convert.ToDecimal(1.21);
             return (retorno);
         }
         int CantidadProductos()
         {
+            int retorno = 0;
             if (Detalle == null) { return 0; };
-            return (Detalle.Count());
+            for (int i = 0 ; i < Detalle.Count() ; i++)
+            {
+                retorno += Detalle[i].cantidad;
+            }
+            return(retorno);
         }
     }
 }

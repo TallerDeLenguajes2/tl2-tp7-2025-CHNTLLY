@@ -28,6 +28,9 @@ public class PresupuestoRepository
         string query = "SELECT * FROM presupuestos";
 
         using var conexion = new SqliteConnection(stringConnection);
+
+        conexion.Open();
+
         using var comando = new SqliteCommand(query, conexion);
 
         using var lector = comando.ExecuteReader();
@@ -37,10 +40,11 @@ public class PresupuestoRepository
             var p = new Presupuestos
             {
                 IdPresupuesto = lector.GetInt32(lector.GetOrdinal("idPresupuesto")),
-                NombreDestinatario = lector.GetString(lector.GetOrdinal("Descripcion")),
+                NombreDestinatario = lector.GetString(lector.GetOrdinal("NombreDestinatario")),
                 FechaCreacion = lector.GetDateTime(lector.GetOrdinal("FechaCreacion")),
                 Detalle = new List<PresupuestoDetalle>()
             };
+
             presupuestos.Add(p);
         }
 
@@ -84,7 +88,7 @@ public class PresupuestoRepository
                     {
                         IdProducto = lector.GetInt32(lector.GetOrdinal("idProducto")),
                         Descripcion = lector.GetString(lector.GetOrdinal("Descripcion")),
-                        Precio = lector.GetDouble(lector.GetOrdinal("Precio"))
+                        Precio = lector.GetDecimal(lector.GetOrdinal("Precio"))
                     },
                     cantidad = lector.GetInt32(lector.GetOrdinal("Cantidad"))
                 };
@@ -114,12 +118,29 @@ public class PresupuestoRepository
     {
         using var conexion = new SqliteConnection(stringConnection);
         conexion.Open();
-
-        string query = "DELETE FROM Presupuestos WHERE idPresupuesto = @idBuscar";
-        using var comando = new SqliteCommand(query, conexion);
-
-        comando.Parameters.Add(new SqliteParameter("@idBuscar", idBuscar));
-
-        return comando.ExecuteNonQuery() > 0;
+        using var transaccion = conexion.BeginTransaction(); //consultar
+        try
+        {
+            string queryDetalles = "DELETE FROM PresupuestosDetalle WHERE idPresupuesto = @idPresupuesto";
+            using (var comandoDetalles = new SqliteCommand(queryDetalles, conexion, transaccion))
+            {
+                comandoDetalles.Parameters.Add(new SqliteParameter("@idPresupuesto",idBuscar));
+                comandoDetalles.ExecuteNonQuery();
+            }
+            string queryPresupuesto = "DELETE FROM Presupuestos WHERE idPresupuesto = @idPresupuesto";
+            int filasAfectadas = 0;
+            using (var comandoProducto = new SqliteCommand(queryPresupuesto, conexion, transaccion))
+            {
+                comandoProducto.Parameters.Add(new SqliteParameter("@idPresupuesto", idBuscar));
+                filasAfectadas = comandoProducto.ExecuteNonQuery();
+            }
+            transaccion.Commit(); //no se ejecuta si alguna de las lineas antriores tuvo un error, por eso esta el transaccion.Rollback()
+            return filasAfectadas > 0;
+        }
+        catch (Exception ex)
+        {
+            transaccion.Rollback(); //se ejecuta si algun ExecuteNonQuery falla
+            return false;
+        }
     }
 }
